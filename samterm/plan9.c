@@ -80,31 +80,12 @@ screensize(int *w, int *h)
 int
 snarfswap(char *fromsam, int nc, char **tosam)
 {
-	char *s1;
-	int f, n, ss;
+	char *s;
 
-	f = open("/dev/snarf", 0);
-	if(f < 0)
-		return -1;
-	ss = SNARFSIZE;
-	if(hversion < 2)
-		ss = 4096;
-	*tosam = s1 = alloc(ss);
-	n = read(f, s1, ss-1);
-	close(f);
-	if(n < 0)
-		n = 0;
-	if (n == 0) {
-		*tosam = 0;
-		free(s1);
-	} else
-		s1[n] = 0;
-	f = create("/dev/snarf", 1, 0666);
-	if(f >= 0){
-		write(f, fromsam, nc);
-		close(f);
-	}
-	return n;
+	s = getsnarf();
+	putsnarf(fromsam);
+	*tosam = s;
+	return s ? strlen(s) : 0;
 }
 
 void

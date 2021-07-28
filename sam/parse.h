@@ -33,7 +33,8 @@ struct Cmd
 #define	ctext	g.text
 #define	caddr	g.addr
 
-extern struct cmdtab
+typedef struct Cmdtab Cmdtab;
+struct Cmdtab
 {
 	ushort	cmdc;		/* command character */
 	uchar	text;		/* takes a textual argument? */

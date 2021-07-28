@@ -63,9 +63,13 @@ void main(int argc, char *argv[])
 	/* options for samterm */
 	case 'a':
 		*ap++ = "-a";
+		if(ap >= termargs+nelem(termargs))
+			usage();
 		break;
 	case 'i':
 		*ap++ = "-i";
+		if(ap >= termargs+nelem(termargs))
+			usage();
 		break;
 	}ARGEND
 	*ap = nil;
@@ -516,7 +520,7 @@ cd(String *str)
 	if(chdir(s))
 		syserror("chdir");
 	fd = open("/dev/wdir", OWRITE);
-	if(fd > 0)
+	if(fd >= 0)
 		write(fd, s, strlen(s));
 	dprint("!\n");
 	Strinit(&owd);

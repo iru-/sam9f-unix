@@ -5,7 +5,7 @@ typedef enum Vis{
 }Vis;
 
 enum{
-	Clicktime=1000,		/* one second */
+	Clicktime=500,		/* milliseconds */
 };
 
 typedef struct Flayer Flayer;
@@ -36,7 +36,7 @@ int	flprepare(Flayer*);
 Rectangle flrect(Flayer*, Rectangle);
 void	flrefresh(Flayer*, Rectangle, int);
 void	flresize(Rectangle);
-int	flselect(Flayer*);
+int	flselect(Flayer*, ulong*);
 void	flsetselect(Flayer*, long, long);
 void	flstart(Rectangle);
 void	flupfront(Flayer*);

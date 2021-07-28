@@ -1,7 +1,7 @@
 #include "sam.h"
 
 enum {
-	Runemask	= 0x1FFFFF,	/* bits used by runes (see grep) */
+	Runemask        = 0x1FFFFF,     /* bits used by runes (see grep) */
 };
 
 Rangeset	sel;
@@ -61,7 +61,7 @@ static	Rangeset sempty;
  *	0x200xx are tokens, i.e. operands for operators
  */
 enum {
-	OPERATOR = 0x1000000,	/* Bitmask of all operators */
+	OPERATOR = Runemask+1,	/* Bitmask of all operators */
 	START	= OPERATOR,	/* Start, used for marker on stack */
 	RBRA,			/* Right bracket, ) */
 	LBRA,			/* Left bracket, ( */
@@ -466,7 +466,7 @@ nextrec(void){
 			exprp++;
 			return '\n';
 		}
-		return *exprp++|(OPERATOR);
+		return *exprp++|(Runemask+1);
 	}
 	return *exprp++;
 }

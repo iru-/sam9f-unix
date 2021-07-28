@@ -44,8 +44,7 @@ initio(void)
 		threadexitsall("kbd");
 	}
 	hoststart();
-	if(plumbstart() < 0)
-		extstart();
+	plumbstart();
 }
 
 void
@@ -130,7 +129,8 @@ again:
 
 	if(got & ~block)
 		return got & ~block;
-	flushimage(display, 1);
+	if(display->bufp > display->buf)
+		flushimage(display, 1);
 	type = alt(alts);
 	switch(type){
 	case RHost:

@@ -3,7 +3,7 @@
 
 static char	linex[]="\n";
 static char	wordx[]=" \t\n";
-struct cmdtab cmdtab[]={
+Cmdtab cmdtab[]={
 /*	cmdc	text	regexp	addr	defcmd	defaddr	count	token	 fn	*/
 	'\n',	0,	0,	0,	0,	aDot,	0,	0,	nl_cmd,
 	'a',	1,	0,	0,	0,	aDot,	0,	0,	a_cmd,
@@ -35,6 +35,8 @@ struct cmdtab cmdtab[]={
 	'>',	0,	0,	0,	0,	aDot,	0,	linex,	plan9_cmd,
 	'<',	0,	0,	0,	0,	aDot,	0,	linex,	plan9_cmd,
 	'|',	0,	0,	0,	0,	aDot,	0,	linex,	plan9_cmd,
+	'^',	0,	0,	0,	0,	aNo,	0,	linex,	plan9_cmd,
+	'_',	0,	0,	0,	0,	aDot,	0,	linex,	plan9_cmd,
 	'=',	0,	0,	0,	0,	aDot,	0,	linex,	eq_cmd,
 	'c'|0x100,0,	0,	0,	0,	aNo,	0,	wordx,	cd_cmd,
 	0,	0,	0,	0,	0,	0,	0,	0,
@@ -76,7 +78,13 @@ inputc(void)
 
     Again:
 	nbuf = 0;
-	if(downloaded){
+	if(cmdbufpos > cmdbuf.nc && cmdbuf.nc > 0){
+		cmdbufpos = 0;
+		bufreset(&cmdbuf);
+	}
+	if(cmdbufpos < cmdbuf.nc && cmdbuf.nc > 0)
+		bufread(&cmdbuf, cmdbufpos++, &r, 1);
+	else if(downloaded){
 		while(termoutp == terminp){
 			cmdupdate();
 			if(patset)
@@ -402,7 +410,7 @@ Cmd *
 parsecmd(int nest)
 {
 	int i, c;
-	struct cmdtab *ct;
+	Cmdtab *ct;
 	Cmd *cp, *ncp;
 	Cmd cmd;
 
@@ -530,7 +538,6 @@ simpleaddr(void)
 
 	addr.next = 0;
 	addr.left = 0;
-	addr.num = 0;
 	switch(skipbl()){
 	case '#':
 		addr.type = getch();

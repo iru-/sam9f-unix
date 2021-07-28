@@ -26,6 +26,12 @@ HFILES=sam.h\
 	errors.h\
 	mesg.h\
 
+UPDATE=\
+	mkfile\
+	parse.h\
+	$HFILES\
+	${OFILES:%.$O=%.c}\
+
 <$PLAN9/src/mkone
 address.$O cmd.$O parse.$O xec.$O unix.$O:	parse.h
 

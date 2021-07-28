@@ -251,19 +251,29 @@ fldelete(Flayer *l, long p0, long p1)
 }
 
 int
-flselect(Flayer *l)
+flselect(Flayer *l, ulong *p)
 {
+	static int clickcount;
+	static Point clickpt = {-10, -10};
+	int dt, dx, dy;
+
 	if(l->visible!=All)
 		flupfront(l);
-	if(l->f.p0==l->f.p1)
-		if(mousep->msec-l->click<Clicktime && l->f.p0+l->origin==l->p0 && 
-			l->f.p0==frcharofpt(&l->f, mousep->xy)){
-			l->click = 0;
-			return 1;
-		}
+	dt = mousep->msec - l->click;
+	dx = abs(mousep->xy.x - clickpt.x);
+	dy = abs(mousep->xy.y - clickpt.y);
+	*p = frcharofpt(&l->f, mousep->xy) + l->origin;
+
 	l->click = mousep->msec;
+	clickpt = mousep->xy;
+
+	if(dx < 3 && dy < 3 && dt < Clicktime && clickcount < 3)
+		return ++clickcount;
+	clickcount = 0;
+
 	frselect(&l->f, mousectl);
-	l->p0 = l->f.p0+l->origin, l->p1 = l->f.p1+l->origin;
+	l->p0 = l->f.p0+l->origin;
+	l->p1 = l->f.p1+l->origin;
 	return 0;
 }
 
@@ -272,7 +282,6 @@ flsetselect(Flayer *l, long p0, long p1)
 {
 	ulong fp0, fp1;
 
-	l->click = 0;
 	if(l->visible==None || !flprepare(l)){
 		l->p0 = p0, l->p1 = p1;
 		return;

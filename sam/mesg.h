@@ -1,7 +1,8 @@
 /* VERSION 1 introduces plumbing
 	2 increases SNARFSIZE from 4096 to 32000
+	3 adds a triple click
  */
-#define	VERSION	2
+#define	VERSION	3
 
 #define	TBLOCKSIZE 512		  /* largest piece of text sent to terminal */
 #define	DATASIZE  (UTFmax*TBLOCKSIZE+30) /* ... including protocol header stuff */
@@ -34,6 +35,7 @@ typedef enum Tmesg
 	Tack,		/* acknowledge Hack */
 	Texit,		/* exit */
 	Tplumb,		/* send plumb message */
+	Ttclick,	/* triple click */
 	TMAX,
 }Tmesg;
 /*

@@ -7,7 +7,9 @@
 
 enum{
 	Up,
-	Down
+	Down,
+
+	Kbel=0x7,
 };
 
 typedef struct Text	Text;
@@ -102,7 +104,6 @@ void	startnewfile(int, Text*);
 void	getmouse(void);
 void	mouseunblock(void);
 void	kbdblock(void);
-void	extstart(void);
 void	hoststart(void);
 int	plumbstart(void);
 int	button(int but);

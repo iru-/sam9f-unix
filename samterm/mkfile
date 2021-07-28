@@ -26,5 +26,10 @@ CFLAGS=$CFLAGS -I../sam
 
 <$PLAN9/src/mkone
 
+CFLAGS=-I../sam $CFLAGS
 
 mesg.$O:	../sam/mesg.h
+
+syms:V:
+	$CC -a $CFLAGS main.c		 > syms
+	for(i in *.c) $CC -aa $CFLAGS $i >> syms

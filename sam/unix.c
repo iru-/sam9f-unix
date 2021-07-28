@@ -178,7 +178,7 @@ tempdisk(void)
 }
 
 #undef waitfor
-int     
+int
 samwaitfor(int pid)
 {
 	int r;
@@ -190,6 +190,25 @@ samwaitfor(int pid)
 	r = atoi(w->msg);
 	free(w);
 	return r;
+}
+
+char*
+waitfor(int pid)
+{
+	Waitmsg *w;
+	static char msg[ERRMAX];
+
+	while((w = p9waitfor(pid)) != nil){
+		if(w->pid != pid){
+			free(w);
+			continue;
+		}
+		strecpy(msg, msg+sizeof msg, w->msg);
+		free(w);
+		return msg;
+	}
+	rerrstr(msg, sizeof msg);
+	return msg;
 }
 
 void

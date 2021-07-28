@@ -31,10 +31,11 @@ int	spacesindent;
 void
 threadmain(int argc, char *argv[])
 {
-	int i, got, scr, chord;
+	int i, got, nclick, scr, chord;
 	Text *t;
 	Rectangle r;
 	Flayer *nwhich;
+	ulong p;
 
 	getscreen(argc, argv);
 	iconinit();
@@ -99,21 +100,23 @@ threadmain(int argc, char *argv[])
 					}
 				}
 			}else if(mousep->buttons&(1|8)){
-				if(nwhich){
-					if(nwhich!=which)
-						current(nwhich);
-					else if(scr)
-						scroll(which, (mousep->buttons&8) ? 4 : 1);
-					else{
-						t=(Text *)which->user1;
-						if(flselect(which)){
-							outTsl(Tdclick, t->tag, which->p0);
-							t->lock++;
-						}else if(t!=&cmd)
-							outcmd();
-						if(mousep->buttons&1)
-							chord = mousep->buttons;
-					}
+				if(scr)
+					scroll(which, (mousep->buttons&8) ? 4 : 1);
+				else if(nwhich && nwhich!=which)
+					current(nwhich);
+				else{
+					t=(Text *)which->user1;
+					nclick = flselect(which, &p);
+					if(nclick > 0){
+						if(nclick > 1)
+							outTsl(Ttclick, t->tag, p);
+						else
+							outTsl(Tdclick, t->tag, p);
+						t->lock++;
+					}else if(t!=&cmd)
+						outcmd();
+					if(mousep->buttons&1)
+						chord = mousep->buttons;
 				}
 			}else if((mousep->buttons&2) && which){
 				if(scr)
@@ -497,6 +500,7 @@ nontypingkey(int c)
 	case Ksoh:
 	case Kenq:
 	case Kstx:
+	case Kbel:
 		return 1;
 	}
 	return 0;
@@ -670,6 +674,22 @@ type(Flayer *l, int res)	/* what a bloody mess this is */
 		a = t->rasp.nrunes;
 		flsetselect(l, a, a);
 		center(l, a);
+	}else if(c == Kbel){
+		int i;
+		if(work == nil)
+			return;
+		if(which != work){
+			current(work);
+			return;
+		}
+		t = (Text*)work->user1;
+		l = &t->l[t->front];
+		for(i=t->front; t->nwin>1 && (i = (i+1)%NL) != t->front; )
+			if(t->l[i].textfn != 0){
+				l = &t->l[i];
+				break;
+			}
+		current(l);
 	}else{
 		if(c==Kesc && typeesc>=0){
 			l->p0 = typeesc;

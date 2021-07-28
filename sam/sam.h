@@ -3,12 +3,6 @@
 #include <plumb.h>
 #include "errors.h"
 
-#undef waitfor
-#define waitfor samwaitfor
-
-#undef warn
-#define warn samwarn
-
 /*
  * BLOCKSIZE is relatively small to keep memory consumption down.
  */
@@ -25,7 +19,7 @@
 #undef INFINITY
 #define	INFINITY	0x7FFFFFFFL
 #define	INCR		25
-#define	STRSIZE		(2*BLOCKSIZE)
+#define	STRSIZE		(512<<20)
 
 typedef long		Posn;		/* file position or address */
 typedef	ushort		Mod;		/* modification number */
@@ -124,7 +118,7 @@ struct Block
 struct Disk
 {
 	int		fd;
-	uint		addr;	/* length of temp file */
+	vlong		addr;	/* length of temp file */
 	Block		*free[Maxblock/Blockincr+1];
 };
 
@@ -248,7 +242,7 @@ File	*current(File*);
 void	delete(File*);
 void	delfile(File*);
 void	dellist(List*, int);
-void	doubleclick(File*, Posn);
+void	stretchsel(File*, Posn, int);
 void	dprint(char*, ...);
 void	edit(File*, int);
 void	*emalloc(ulong);
@@ -328,7 +322,8 @@ void	trytoclose(File*);
 void	trytoquit(void);
 int	undo(int);
 void	update(void);
-int	waitfor(int);
+#undef waitfor
+char	*waitfor(int);
 void	warn(Warn);
 void	warn_s(Warn, char*);
 void	warn_SS(Warn, String*, String*);
@@ -350,6 +345,7 @@ extern char	SH[];
 extern char	SHPATH[];
 extern char	RX[];
 extern char	RXPATH[];
+extern char	SAMSAVECMD[];
 
 /*
  * acme globals
@@ -367,6 +363,8 @@ extern int	quitok;
 extern Address	addr;
 extern Buffer	snarfbuf;
 extern Buffer	plan9buf;
+extern Buffer	cmdbuf;
+extern int	cmdbufpos;
 extern List	file;
 extern List	tempfile;
 extern File	*cmd;
@@ -404,3 +402,5 @@ void	outTsl(Hmesg, int, long);
 void	outTsv(Hmesg, int, vlong);
 void	outflush(void);
 int needoutflush(void);
+
+Posn	nlcount(File *f, Posn p0, Posn p1);

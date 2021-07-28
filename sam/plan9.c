@@ -49,21 +49,6 @@ print_s(char *s, String *a)
 	dprint("?warning: %s `%.*S'\n", s, a->n, a->s);
 }
 
-char*
-getuser(void)
-{
-	static char user[64];
-	int fd;
-
-	if(user[0] == 0){
-		fd = open("/dev/user", 0);
-		if(fd<0 || read(fd, user, sizeof user-1)<=0)
-			strcpy(user, "none");
-		close(fd);
-	}
-	return user;
-}
-
 int
 statfile(char *name, ulong *dev, uvlong *id, long *time, long *length, long *appendonly)
 {
